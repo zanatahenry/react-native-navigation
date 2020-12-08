@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useNavigation } from '@react-navigation/native'
 import { ActivityIndicator, Keyboard } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialIcons';
 
@@ -6,11 +7,13 @@ import { Container, Form, Input, SubmitButton, List, Tech, Name, ProfileButton }
 
 import api from '../../services/api'
 
-export default function App() {
+export default function Techs() {
 
   const [loading, setLoading] = useState(false);
   const [techs, setTechs] = useState([]);
   const [newTech, setNewTech] = useState(null);
+
+  const navigation = useNavigation();
 
   async function handleAddTech(){
     setLoading(true);
@@ -19,7 +22,7 @@ export default function App() {
       id: newTech,
     });
 
-    setTechs([...techs, data])
+    setTechs([...techs, data]);
 
     setLoading(false);
 
@@ -27,6 +30,20 @@ export default function App() {
 
     Keyboard.dismiss();
   }
+
+  async function handleDeleteTech(id){
+
+   await api.delete(`/techs/${id}`);
+
+   const filteredTechs = techs.filter((item) => item.id !== id);
+
+   setTechs(filteredTechs);
+  }
+
+  function navigationToDetail(){
+    navigation.navigate('TechDetails', { tech })
+  }
+
 
   return (
         <Container>
@@ -38,7 +55,7 @@ export default function App() {
               value={newTech}
               onChangeText={setNewTech}
               returnKeyType="send"
-              onSubmitEditing={() => {}}
+              onSubmitEditing={handleAddTech}
             />
             <SubmitButton loading={loading} onPress={handleAddTech} >
               {loading ? (
@@ -51,15 +68,15 @@ export default function App() {
           <List
             data={techs}
             keyExtractor={(tech) => tech.id}
-            renderItem={({item}) => (
+            renderItem={({ item }) => (
               <Tech>
                 <Name>{item.id}</Name>
 
-                <ProfileButton background="#ffc107" onPress={() => {}} >
+                <ProfileButton background="#ffc107" onPress={() => navigationToDetail(item)} >
                   <Icon name="design-services" size={20} color="#fff" />
                 </ProfileButton>
 
-                <ProfileButton background="#e0a800" onPress={() => {}} >
+                <ProfileButton background="#e0a800" onPress={() => handleDeleteTech(item.id)} >
                   <Icon name="delete" size={20} color="#fff" />
                 </ProfileButton>
               </Tech>

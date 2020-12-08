@@ -63,7 +63,7 @@ export const Name = styled.Text `
 export const ProfileButton = styled(RectButton)`
   justify-content: center;
   align-items: center;
-  background: ${(props) => (props.background)};
+  background: ${(props) => props.background};
   border-radius: 4px;
   margin-left: 10px;
   padding: 0 12px;
